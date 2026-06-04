@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- Bu dosyayı tarayıcıda aç, ikonları sağ tıkla > farklı kaydet ile kaydet -->
+<html>
+<body style="background:#222;display:flex;gap:20px;padding:20px;align-items:flex-end;">
+  <div>
+    <canvas id="c16" width="16" height="16"></canvas>
+    <p style="color:#fff;font-size:10px">icon16.png</p>
+  </div>
+  <div>
+    <canvas id="c48" width="48" height="48"></canvas>
+    <p style="color:#fff;font-size:10px">icon48.png</p>
+  </div>
+  <div>
+    <canvas id="c128" width="128" height="128"></canvas>
+    <p style="color:#fff;font-size:10px">icon128.png</p>
+  </div>
+  <script>
+    function drawIcon(canvasId, size) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext("2d");
+      const r = size / 2;
+
+      // Arka plan dairesi
+      ctx.fillStyle = "#ff5500";
+      ctx.beginPath();
+      ctx.arc(r, r, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // "F" harfi
+      ctx.fillStyle = "#fff";
+      ctx.font = `bold ${Math.round(size * 0.6)}px Arial`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("F", r, r * 1.05);
+    }
+    drawIcon("c16", 16);
+    drawIcon("c48", 48);
+    drawIcon("c128", 128);
+  </script>
+</body>
+</html>

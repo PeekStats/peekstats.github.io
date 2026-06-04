@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PeekStats — Per-Map K/D & Veto Tracker for FACEIT</title>
+  <meta name="description" content="Free Chrome extension showing per-map K/D, win rates and ADR for every player in your FACEIT match room. Live veto tracking with team attribution." />
+  <meta property="og:title" content="PeekStats — FACEIT Match Overlay" />
+  <meta property="og:description" content="Per-map K/D, win rates, ADR for every FACEIT player. Live veto tracker. Free, no tracking." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="icons/icon128.png" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e8e8e8;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: #ff7733; text-decoration: none; }
+    a:hover { color: #ff5500; text-decoration: underline; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Hero ────────────────────────────────────────── */
+    .hero {
+      padding: 90px 0 80px;
+      text-align: center;
+      background: radial-gradient(ellipse at top, rgba(255,85,0,0.12), transparent 60%);
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .hero-logo {
+      width: 96px; height: 96px;
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(255,85,0,0.35);
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 0%, #ff9b66 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero .tagline {
+      font-size: 22px;
+      color: #999;
+      max-width: 620px;
+      margin: 0 auto 40px;
+      font-weight: 400;
+    }
+    .hero .tagline strong { color: #fff; font-weight: 600; }
+
+    /* ── CTA Buttons ─────────────────────────────────── */
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: #ff5500;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(255,85,0,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(255,85,0,0.55);
+      text-decoration: none;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #1a1a1a;
+      color: #ddd;
+      border: 1px solid #2a2a2a;
+    }
+    .btn-secondary:hover {
+      background: #222;
+      text-decoration: none;
+      color: #fff;
+    }
+    .meta-line {
+      color: #555;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .meta-line span { margin: 0 8px; }
+
+    /* ── Features ────────────────────────────────────── */
+    .section {
+      padding: 80px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ff5500;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-headline {
+      text-align: center;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 60px;
+      color: #fff;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 12px;
+      padding: 28px 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature:hover {
+      border-color: #ff5500;
+      transform: translateY(-4px);
+    }
+    .feature-icon {
+      font-size: 28px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .feature h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .feature p {
+      font-size: 14px;
+      color: #888;
+      line-height: 1.65;
+    }
+
+    /* ── How It Works ────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .step {
+      text-align: center;
+    }
+    .step-num {
+      display: inline-flex;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #ff5500;
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 16px rgba(255,85,0,0.3);
+    }
+    .step h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .step p {
+      font-size: 13.5px;
+      color: #888;
+    }
+
+    /* ── Privacy ─────────────────────────────────────── */
+    .privacy-block {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 14px;
+      padding: 36px;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .privacy-block h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .privacy-block p {
+      color: #999;
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+    .privacy-pills {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    .pill {
+      background: #1a1a1a;
+      color: #ccc;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #2a2a2a;
+    }
+    .pill::before { content: "✓ "; color: #4ade80; }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      color: #555;
+      font-size: 13px;
+    }
+    footer a { color: #888; margin: 0 12px; }
+
+    /* ── Mobile ──────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero { padding: 60px 0 50px; }
+      .hero h1 { font-size: 40px; }
+      .hero .tagline { font-size: 18px; }
+      .section { padding: 60px 0; }
+      .section-headline { font-size: 28px; margin-bottom: 40px; }
+      .privacy-block { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <img src="icons/icon128.png" alt="PeekStats" class="hero-logo" />
+      <h1>PeekStats</h1>
+      <p class="tagline">
+        Per-map K/D, win rates and ADR for every player in your <strong>FACEIT</strong> match room.
+        Live veto tracker with team attribution. Free, forever.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/lgdggeacnlnhmpfpffokdfiddeboecfg?utm_source=item-share-cb" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="white" stroke-width="2"/><path d="M12 2L12 8M20.66 7L15.46 10M3.34 7L8.54 10" stroke="white" stroke-width="2"/></svg>
+          Add to Chrome — Free
+        </a>
+        <a class="btn btn-secondary" href="privacy_policy.html">
+          Privacy Policy
+        </a>
+      </div>
+      <p class="meta-line">
+        <span>✓ No account needed</span>
+        <span>✓ No tracking</span>
+        <span>✓ Open source</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Features ─────────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section-title">Features</div>
+      <h2 class="section-headline">Know who you're playing against</h2>
+      <div class="features">
+
+        <div class="feature">
+          <span class="feature-icon">🎯</span>
+          <h3>Per-Map Stats</h3>
+          <p>K/D, win rate and ADR for every player on all 8 active maps — Mirage, Inferno, Dust2, Nuke, Ancient, Overpass, Anubis, Cache.</p>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">📊</span>
+          <h3>Team Averages</h3>
+          <p>Side-by-side comparison of both teams across every map. See instantly which maps favor your side.</p>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">🗳️</span>
+          <h3>Live Veto Tracker</h3>
+          <p>Watch bans in real time with full team attribution — see exactly who banned what, and the final pick highlighted in green.</p>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">⚡</span>
+          <h3>Auto-Accept</h3>
+          <p>Optional toggle that auto-clicks the ready-check popup. Never miss a queue pop while you're afk.</p>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">🎨</span>
+          <h3>Clean & Draggable</h3>
+          <p>Move the overlay anywhere, collapse to a corner icon when you don't need it. Dark theme that matches FACEIT.</p>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">🔒</span>
+          <h3>Zero Tracking</h3>
+          <p>No accounts, no analytics, no ads. Stats fetched directly from FACEIT's official API. Code is open and reviewable.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ─────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="section-title">Get Started</div>
+      <h2 class="section-headline">Three steps. No setup.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h4>Install</h4>
+          <p>Add PeekStats from the Chrome Web Store. One click.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h4>Join a match</h4>
+          <p>Open any FACEIT CS2 match room as you normally would.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h4>That's it</h4>
+          <p>Overlay appears automatically with everyone's stats.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Privacy ──────────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <div class="privacy-block">
+        <h3>Privacy you can verify</h3>
+        <p>
+          PeekStats runs entirely in your browser. No data ever leaves your machine
+          except calls to FACEIT's own public API. Nothing is logged, tracked, or sold.
+        </p>
+        <div class="privacy-pills">
+          <span class="pill">No accounts</span>
+          <span class="pill">No analytics</span>
+          <span class="pill">No ads</span>
+          <span class="pill">No data collection</span>
+          <span class="pill">Local cache only</span>
+        </div>
+        <p style="margin-top: 22px;">
+          <a href="privacy_policy.html">Read the full privacy policy →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <p>PeekStats v1.2.0 · Built for FACEIT players, by a FACEIT player</p>
+      <p style="margin-top: 10px;">
+        <a href="privacy_policy.html">Privacy</a>
+        ·
+        <a href="https://chromewebstore.google.com/detail/lgdggeacnlnhmpfpffokdfiddeboecfg?utm_source=item-share-cb" target="_blank" rel="noopener">Chrome Web Store</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

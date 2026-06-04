@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PeekStats — Privacy Policy</title>
+  <style>
+    body {
+      max-width: 720px;
+      margin: 60px auto;
+      padding: 0 24px;
+      font-family: "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #222;
+    }
+    h1 { font-size: 26px; margin-bottom: 6px; }
+    h2 { font-size: 17px; margin-top: 32px; margin-bottom: 8px; }
+    p  { margin-bottom: 12px; }
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    .date { color: #888; font-size: 13px; margin-bottom: 32px; }
+  </style>
+</head>
+<body>
+  <h1>PeekStats — Privacy Policy</h1>
+  <p class="date">Last updated: May 2025</p>
+
+  <p>
+    PeekStats is a Chrome extension that displays CS2 player statistics
+    (per-map K/D, win rates, ADR) directly within FACEIT match room pages.
+    This policy explains what data the extension accesses and how it is used.
+  </p>
+
+  <h2>Data We Access</h2>
+  <ul>
+    <li>
+      <strong>FACEIT session token</strong> — The extension reads your FACEIT
+      session token from the page's localStorage solely to authenticate requests
+      to the FACEIT Open Data API on your behalf. This token is stored temporarily
+      in <code>chrome.storage.session</code> and is never transmitted to any
+      server other than FACEIT's official API (<code>open.faceit.com</code>).
+    </li>
+    <li>
+      <strong>Player statistics</strong> — Public CS2 statistics (K/D ratio,
+      win rate, ADR, ELO) are fetched from the FACEIT Open Data API for players
+      visible in the current match room. These are public stats accessible to
+      anyone with a FACEIT API key.
+    </li>
+    <li>
+      <strong>Local cache</strong> — Fetched statistics are cached locally in
+      <code>chrome.storage.local</code> for up to 1 hour to reduce API calls.
+      This data never leaves your browser.
+    </li>
+  </ul>
+
+  <h2>Data We Do NOT Collect</h2>
+  <ul>
+    <li>We do not collect, store, or transmit any personal data to our servers.</li>
+    <li>We do not have servers. The extension operates entirely client-side.</li>
+    <li>We do not use analytics, tracking pixels, or third-party services.</li>
+    <li>We do not share any data with third parties.</li>
+  </ul>
+
+  <h2>Third-Party API</h2>
+  <p>
+    The extension communicates exclusively with the
+    <a href="https://developers.faceit.com" target="_blank">FACEIT Open Data API</a>
+    (<code>https://open.faceit.com/data/v4</code>) to retrieve publicly available
+    player and match data. FACEIT's own
+    <a href="https://www.faceit.com/en/privacy_policy" target="_blank">Privacy Policy</a>
+    governs that data.
+  </p>
+
+  <h2>Permissions Used</h2>
+  <ul>
+    <li><strong>storage</strong> — to cache player stats locally and save user preferences.</li>
+    <li><strong>activeTab</strong> — to communicate with the FACEIT tab currently open.</li>
+    <li><strong>host permission (faceit.com)</strong> — to inject the stats overlay into FACEIT match room pages.</li>
+    <li><strong>host permission (open.faceit.com)</strong> — to call the FACEIT Open Data API.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>
+    If you have questions about this privacy policy, please open an issue on the
+    extension's GitHub repository or contact us via the Chrome Web Store listing.
+  </p>
+</body>
+</html>
