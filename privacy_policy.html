@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PeekStats — Privacy Policy</title>
+  <title>PeekStats - Privacy Policy</title>
   <style>
     body {
       max-width: 720px;
@@ -19,70 +19,94 @@
     p  { margin-bottom: 12px; }
     ul { padding-left: 20px; margin-bottom: 12px; }
     .date { color: #888; font-size: 13px; margin-bottom: 32px; }
+    pre { background: #f5f5f5; border: 1px solid #e3e3e3; border-radius: 6px;
+          padding: 14px 16px; font-size: 13px; line-height: 1.55; overflow: auto;
+          font-family: "SF Mono", Consolas, monospace; }
+    pre .c { color: #999; }
   </style>
 </head>
 <body>
-  <h1>PeekStats — Privacy Policy</h1>
-  <p class="date">Last updated: May 2025</p>
+  <h1>PeekStats - Privacy Policy</h1>
+  <p class="date">Last updated: June 2026</p>
 
   <p>
-    PeekStats is a Chrome extension that displays CS2 player statistics
-    (per-map K/D, win rates, ADR) directly within FACEIT match room pages.
-    This policy explains what data the extension accesses and how it is used.
+    PeekStats is a browser extension that displays CS2 player statistics directly
+    within FACEIT match room pages. This policy explains what data the extension
+    accesses and how it is used.
   </p>
 
   <h2>Data We Access</h2>
   <ul>
     <li>
-      <strong>FACEIT session token</strong> — The extension reads your FACEIT
-      session token from the page's localStorage solely to authenticate requests
-      to the FACEIT Open Data API on your behalf. This token is stored temporarily
-      in <code>chrome.storage.session</code> and is never transmitted to any
-      server other than FACEIT's official API (<code>open.faceit.com</code>).
+      <strong>FACEIT session information</strong> - The extension may call
+      FACEIT's own session endpoint from the FACEIT page to identify your current
+      FACEIT account for features such as your ELO badge and "played before".
+      The extension does not read or store your password.
     </li>
     <li>
-      <strong>Player statistics</strong> — Public CS2 statistics (K/D ratio,
-      win rate, ADR, ELO) are fetched from the FACEIT Open Data API for players
-      visible in the current match room. These are public stats accessible to
-      anyone with a FACEIT API key.
+      <strong>Player statistics</strong> - Public CS2 statistics such as K/D,
+      win rate, ADR, ELO, map statistics and recent match summaries are fetched
+      for players visible in the current match room.
     </li>
     <li>
-      <strong>Local cache</strong> — Fetched statistics are cached locally in
+      <strong>Local cache</strong> - Fetched statistics are cached locally in
       <code>chrome.storage.local</code> for up to 1 hour to reduce API calls.
-      This data never leaves your browser.
+    </li>
+    <li>
+      <strong>Anonymous diagnostic reports</strong> - If a critical extension
+      feature fails to render, the extension may send a minimal technical report
+      to PeekStats servers. Reports can include the extension version, a generic
+      page type (with all identifiers such as room or player ids removed), a coarse
+      browser/OS label (e.g. "Chrome/Windows"), an error code and non-personal
+      debugging flags. Reports do not include your FACEIT account, room ids, player
+      ids, password, cookies, access tokens, chat messages, or player statistics.
     </li>
   </ul>
+
+  <h2>What a Diagnostic Report Looks Like</h2>
+  <p>
+    For full transparency, this is the complete contents of a diagnostic report.
+    Nothing else is sent — there is no hidden field:
+  </p>
+  <pre>{
+  "code": "self_badge_no_avatar",   <span class="c">// what failed</span>
+  "ts": 1719500000000,              <span class="c">// timestamp</span>
+  "version": "2.0.1",               <span class="c">// extension version</span>
+  "page": "/cs2/room/:id",          <span class="c">// page type — ALL ids removed</span>
+  "browser": "Chrome/Windows",      <span class="c">// coarse browser/OS only</span>
+  "imgCount": 42                    <span class="c">// non-personal debug flag</span>
+}</pre>
+  <p>
+    No account, no nickname, no room or player id, no statistics — only the
+    information needed to find and fix a bug.
+  </p>
 
   <h2>Data We Do NOT Collect</h2>
   <ul>
-    <li>We do not collect, store, or transmit any personal data to our servers.</li>
-    <li>We do not have servers. The extension operates entirely client-side.</li>
-    <li>We do not use analytics, tracking pixels, or third-party services.</li>
-    <li>We do not share any data with third parties.</li>
+    <li>We do not collect your FACEIT password, cookies, or access tokens.</li>
+    <li>We do not use analytics, tracking pixels, or advertising trackers.</li>
+    <li>We do not sell or share diagnostic reports with third parties.</li>
   </ul>
 
-  <h2>Third-Party API</h2>
+  <h2>Third-Party APIs</h2>
   <p>
-    The extension communicates exclusively with the
-    <a href="https://developers.faceit.com" target="_blank">FACEIT Open Data API</a>
-    (<code>https://open.faceit.com/data/v4</code>) to retrieve publicly available
-    player and match data. FACEIT's own
+    The extension retrieves FACEIT data through FACEIT's public and first-party
+    endpoints. Public FACEIT API calls are proxied through PeekStats' Cloudflare
+    Worker so the FACEIT API key is not shipped inside the extension. FACEIT's own
     <a href="https://www.faceit.com/en/privacy_policy" target="_blank">Privacy Policy</a>
-    governs that data.
+    governs FACEIT data.
   </p>
 
   <h2>Permissions Used</h2>
   <ul>
-    <li><strong>storage</strong> — to cache player stats locally and save user preferences.</li>
-    <li><strong>activeTab</strong> — to communicate with the FACEIT tab currently open.</li>
-    <li><strong>host permission (faceit.com)</strong> — to inject the stats overlay into FACEIT match room pages.</li>
-    <li><strong>host permission (open.faceit.com)</strong> — to call the FACEIT Open Data API.</li>
+    <li><strong>storage</strong> - to cache player stats locally and save user preferences.</li>
+    <li><strong>host permission (faceit.com)</strong> - to inject PeekStats features into FACEIT pages.</li>
   </ul>
 
   <h2>Contact</h2>
   <p>
-    If you have questions about this privacy policy, please open an issue on the
-    extension's GitHub repository or contact us via the Chrome Web Store listing.
+    If you have questions about this privacy policy, contact us through the
+    Chrome Web Store listing or the official PeekStats support channels.
   </p>
 </body>
 </html>
